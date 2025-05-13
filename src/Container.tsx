@@ -7,10 +7,10 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
+  useFrameCallback,
   useSharedValue,
   withDelay,
   withTiming,
-  useFrameCallback,
 } from 'react-native-reanimated'
 
 import { Context, TabNameContext } from './Context'
@@ -21,9 +21,9 @@ import { IS_IOS, ONE_FRAME_MS, scrollToImpl } from './helpers'
 import {
   useAnimatedDynamicRefs,
   useContainerRef,
+  useLayoutHeight,
   usePageScrollHandler,
   useTabProps,
-  useLayoutHeight,
 } from './hooks'
 import {
   CollapsibleProps,
@@ -229,7 +229,9 @@ export const Container = React.memo(
       const toggleSyncScrollFrame = (toggle: boolean) =>
         syncScrollFrame.setActive(toggle)
       const syncScrollFrame = useFrameCallback(({ timeSinceFirstFrame }) => {
-        syncCurrentTabScrollPosition()
+        if (timeSinceFirstFrame % 100 === 0) {
+          syncCurrentTabScrollPosition()
+        }
         if (timeSinceFirstFrame > 1500) {
           runOnJS(toggleSyncScrollFrame)(false)
         }
